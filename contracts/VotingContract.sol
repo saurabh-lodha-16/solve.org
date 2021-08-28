@@ -69,6 +69,9 @@ contract VotingContract {
         solveToken = _solveToken; // Solve Token ERC20 contract
     }
     
+    function getTotalIdeas() external view returns(uint256) {
+        return ideaIDs.current();
+    }
     
     function submitIdea (
         address _owner,
