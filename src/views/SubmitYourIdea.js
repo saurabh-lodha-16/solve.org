@@ -1,4 +1,3 @@
-//stopstream
 import { requestAccount } from "../utils";
 
 import { TextField, Button } from '@material-ui/core';
@@ -7,14 +6,50 @@ import { useState } from "react";
 
 import { ethers } from 'ethers';
 import * as constants from "../constants";
-import Streaming from "../abis/Streaming.json";
+import VotingContract from "../abis/VotingContract.json";
 
 function SubmitYourIdea() {
     const classes = useStyles();
-    const [streamId, setStreamId] = useState();
+    const [ideaTitle, setIdeaTitle] = useState();
+    const [ideaDesc, setIdeaDesc] = useState();
+    const [ideaSol, setIdeaSol] = useState();
+    const [reqEth, setReqEth] = useState();
     const [status, setStatus] = useState();
 
-    async function stopStream() {
+    function validateIdeaTitleInput() {
+        return ideaTitle ? true : false;
+    }
+
+    function validateIdeaDescInput() {
+        return ideaDesc ? true : false;
+    }
+
+    function validateIdeaSolInput() {
+        return ideaSol ? true : false;
+    }
+
+    function validateReqEthInput() {
+        return reqEth >= 0.01 ? true : false;
+    }
+
+    async function submitIdea() {
+
+        if (!validateIdeaTitleInput()) {
+            setStatus("Please enter an Idea Title");
+            return;
+        }
+        else if (!validateIdeaDescInput()) {
+            setStatus("Please enter an Idea description");
+            return;
+        }
+        else if (!validateIdeaSolInput()) {
+            setStatus("Please enter an Idea solution");
+            return;
+        }
+        else if (!validateReqEthInput()) {
+            setStatus("Invalid Ether Amount!");
+            return;
+        }
         setStatus("Loading...");
 
         if (typeof window.ethereum != undefined) {
@@ -22,25 +57,34 @@ function SubmitYourIdea() {
 
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
-            const streamingContract = new ethers.Contract(
+            const votingContract = new ethers.Contract(
                 constants.CONTRACT_ADDR,
-                Streaming.abi,
+                VotingContract.abi,
                 signer
             );
 
             try {
-                let streamingTransaction = await streamingContract.cancelStream(
-                    streamId
+
+                let userAddress = "dummy";
+
+                let submitIdeaTransaction = await votingContract.submitIdea(
+                    userAddress,
+                    ideaTitle,
+                    ideaDesc,
+                    ideaSol,
+                    reqEth,
                 );
 
-                let receipt = await streamingTransaction.wait();
+                let receipt = await submitIdeaTransaction.wait();
                 console.log(receipt);
 
-                setStatus(`Stream stopped successfully`);
+                let ideaId = receipt.events[2].args[0].toString();
+
+                setStatus(`Idea Submitted successfully`);
             }
             catch (err) {
                 console.log(err);
-                setStatus("Failed to stop stream");
+                setStatus("Failed to submit idea");
             }
         }
     }
@@ -48,29 +92,20 @@ function SubmitYourIdea() {
     return (
         <div>
             <center>
-                <TextField
+            <TextField
                     className={classes.formElement}
-                   // onChange={e => setStreamId(e.target.value)}
-                    type="text"
-                    label="Idea Title" /><br /><br />
-                    <TextField
+                    onChange={e => setIdeaTitle(e.target.value)} label="Idea Title" /><br />
+            <TextField
                     className={classes.formElement}
-                   // onChange={e => setStreamId(e.target.value)}
-                    type="text"
-                    label="Idea Description" /><br /><br />
-                    <TextField
+                    onChange={e => setIdeaDesc(e.target.value)} label="Idea Description" /><br />
+            <TextField
                     className={classes.formElement}
-                   // onChange={e => setStreamId(e.target.value)}
-                    type="text"
-                    label="Idea Solution" /><br /><br />
-                    <TextField
+                    onChange={e => setIdeaSol(e.target.value)} label="Idea Solution" /><br />
+            <TextField
                     className={classes.formElement}
-                  //  onChange={e => setStreamId(e.target.value)}
-                    type="number"
-                    label="Ether Required" /><br /><br />
-
+                    onChange={e => setReqEth(e.target.value)} label="Ether Required" /><br />
                 <Button
-                onClick={stopStream}
+                onClick={submitIdea}
                 className={classes.formElement}
                 variant="contained"
                 color="primary"
