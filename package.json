@@ -21,7 +21,8 @@
     "eject": "react-scripts eject",
     "deploy-solveToken": "npx hardhat run scripts/deploySolveToken.js",
     "deploy-votingContract": "npx hardhat run scripts/deployVotingContract.js",
-    "deploy-contracts": "npx hardhat run scripts/deployContracts.js --network test_network"
+    "deploy-contracts": "npx hardhat run scripts/deployContracts.js --network test_network",
+    "verify-contracts": "npx hardhat run scripts/verifyContracts.js --network test_network"
   },
   "eslintConfig": {
     "extends": [
