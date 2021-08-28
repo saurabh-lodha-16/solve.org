@@ -2,12 +2,6 @@ const { artifacts } = require("hardhat");
 const hre = require("hardhat");
 const ConstructorParams = require("./constructorParams.json");
 
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
 async function main() {
   const SolveToken = await hre.ethers.getContractFactory("SolveToken");
   const solveToken = await SolveToken.deploy(
@@ -18,28 +12,11 @@ async function main() {
   await solveToken.deployed();
   console.log("Solve Token Contract address:", solveToken.address);
 
-  await sleep(20000);
-
-  await hre.run("verify:verify", {
-    address: solveToken.address,
-    constructorArguments: [
-      ConstructorParams.tokenName,
-      ConstructorParams.tokenSymbol,
-    ],
-  });
-
   const VotingContract = await hre.ethers.getContractFactory("VotingContract");
   const votingContract = await VotingContract.deploy(solveToken.address);
 
   await votingContract.deployed();
   console.log("Voting Contract address:", votingContract.address);
-
-  await sleep(20000);
-
-  await hre.run("verify:verify", {
-    address: votingContract.address,
-    constructorArguments: [solveToken.address],
-  });
 
   saveFrontendFiles(votingContract, solveToken);
 }

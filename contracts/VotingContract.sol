@@ -3,9 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "./IERC20.sol";
-
-//ask shubham if we need to keep rate of ether to solve less to avoid need of voting from dapp.
+import "./SolveToken.sol";
 
 contract VotingContract {
     
@@ -13,7 +11,7 @@ contract VotingContract {
     using Counters for Counters.Counter;
 
     Counters.Counter private ideaIDs;
-    IERC20 public solveToken;
+    SolveToken public solveToken;
     
    modifier ensureOwnerOfIdea(uint256 ideaId) {
         require(ideas[ideaId].owner == msg.sender, "Only owner of the idea can access");
@@ -63,12 +61,15 @@ contract VotingContract {
     mapping(address => uint256[]) public ideaIdsVotedByAddress;
     
     constructor(
-        IERC20 _solveToken
+        SolveToken _solveToken
     )
     {
         solveToken = _solveToken; // Solve Token ERC20 contract
     }
     
+    function getTotalIdeas() external view returns(uint256) {
+        return ideaIDs.current();
+    }
     
     function submitIdea (
         address _owner,
@@ -78,7 +79,7 @@ contract VotingContract {
         uint256 _requiredDonationInEthers
         )  external returns (uint256) 
     {
-        require(_requiredDonationInEthers >= 1, 'Required Donation In Ethers should be greater than 1');//confirm with Shubham
+        require(_requiredDonationInEthers >= 1, 'Required Donation In Ethers should be greater than 1');
         ideaIDs.increment();
         uint256 newIdeaID = ideaIDs.current();
         ideas[newIdeaID].title = _title;
@@ -90,8 +91,7 @@ contract VotingContract {
         emit IdeaCreated(newIdeaID, _owner);
         return newIdeaID;
     }
-
-    // take argument for number of votes
+    
     function voteForIdea(uint256 ideaID) external ensureIdeaExists(ideaID) {
         require(solveToken.balanceOf(msg.sender) >= 1e18, 'User does not have enough SOLVE tokens');
         require(ideas[ideaID].isFunded == false, 'Idea already funded.');
@@ -116,7 +116,7 @@ contract VotingContract {
         Idea storage idea = ideas[ideaID];
         uint256 solveTokensForTheIdea = (idea.requiredDonationInEthers.mul(100)).mul(1e18);
         solveToken.burn(solveTokensForTheIdea);
-        (bool sent,) = payable(msg.sender).call{value: idea.requiredDonationInEthers.mul(1e18), gas: 100000}("");
+        (bool sent,) = payable(msg.sender).call{value: idea.requiredDonationInEthers.mul(1e18)}("");
         require(sent, "Failed to send Ether");
         idea.hasClaimed = true;
         emit RewardsClaimed(ideaID, idea.owner, solveTokensForTheIdea);
