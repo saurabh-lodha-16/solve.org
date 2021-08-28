@@ -1,5 +1,6 @@
 {
   "tokenName": "SOLVE",
   "tokenSymbol": "SOLVE",
-  "solveTokenAddress": "0x2cE06DD1528C937823f0708941821E3df67eE820"
+  "solveTokenAddress": "0x5dB8135C5A452A938504516d8B8a8Ad65244551f",
+  "votingContractAddress": "0xB0649eB661f103542823b8BDb692393816646749"
 }
