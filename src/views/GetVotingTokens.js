@@ -60,14 +60,19 @@ function GetVotingTokens() {
       <center>
         <TextField
           className={classes.formElement}
-          onChange={(e) => setReqEth(e.target.value)}
+          onChange={(e) => {
+            setReqEth(e.target.value);
+            setSolveTokens(e.target.value * 100);
+          }}
+          //add validation to avoid negative numbers
           type="number"
           label="Amount of Ether"
         />
         <br />
         <TextField
           className={classes.formElement}
-          onChange={(e) => setSolveTokens(e.target.value)}
+          type="number"
+          value={solveTokens}
           label="Number of SOLVE Tokens"
         />
         <br />
