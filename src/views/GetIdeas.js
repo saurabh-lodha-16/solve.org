@@ -12,20 +12,16 @@ import {
 import { useStyles } from "../styles";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
-import VotingContract from "../abis/VotingContract.json";
 import CircularProgressWithLabel from "../styles/circularWithLabel";
-
+import { Button } from "@material-ui/core";
+import VotingContract from "../abis/VotingContract.json";
 const constants = require("../abis/contract-address.json");
+
 function GetIdeas() {
   const classes = useStyles();
 
-  const [ideas, setIdeas] = useState();
+  const [ideas, setIdeas] = useState(() => new Map());
   const [status, setStatus] = useState();
-  const [expanded, setExpanded] = useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
 
   const showIdeaCards = (allIdeas) => {
     return allIdeas.map((idea) => {
@@ -87,8 +83,12 @@ function GetIdeas() {
       );
 
       try {
-        let ideasMappingTransaction = await getIdeasContract.ideas(1);
-        console.log(ideasMappingTransaction);
+        let totalIdeas = Number(await getIdeasContract.getTotalIdeas());
+
+        for (var i = 1; i <= totalIdeas; i++) {
+          let ideaFromContract = await getIdeasContract.ideas(i);
+          setIdeas(ideas.set(i, ideaFromContract));
+        }
       } catch (err) {
         console.log(err);
         setStatus("idea fetching failed");
@@ -101,6 +101,68 @@ function GetIdeas() {
       <Grid container>{showIdeaCards([1, 2, 3, 4])}</Grid>
     </Container>
   );
+
+  async function voteForIdea(ideaId) {
+    setStatus("Loading...");
+
+    if (typeof window.ethereum != undefined) {
+      await requestAccount();
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const votingContract = new ethers.Contract(
+        constants.VotingContract,
+        VotingContract.abi,
+        signer
+      );
+
+      try {
+        let submitVoteTransaction = await votingContract.voteForIdea(ideaId);
+
+        let receipt = await submitVoteTransaction.wait();
+        console.log(receipt);
+
+        let ideaFromContract = await votingContract.ideas(ideaId);
+        setIdeas(ideas.set(ideaId, ideaFromContract));
+
+        setStatus(`Idea Voted successfully`);
+      } catch (err) {
+        console.log(err);
+        setStatus("Failed to vote for idea");
+      }
+    }
+  }
+
+  async function claimFunds(ideaId) {
+    setStatus("Loading...");
+
+    if (typeof window.ethereum != undefined) {
+      await requestAccount();
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const votingContract = new ethers.Contract(
+        constants.VotingContract,
+        VotingContract.abi,
+        signer
+      );
+
+      try {
+        let submitClaimTransaction = await votingContract.claimFunds(ideaId);
+
+        let receipt = await submitClaimTransaction.wait();
+        console.log(receipt);
+
+        let ideaFromContract = await votingContract.ideas(ideaId);
+        setIdeas(ideas.set(ideaId, ideaFromContract));
+
+        setStatus(`Idea funds claimed successfully`);
+      } catch (err) {
+        console.log(err);
+        setStatus("Failed to claim funds for idea");
+      }
+    }
+  }
 }
 
 export { GetIdeas };
