@@ -3,16 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/pickers": "^3.3.10",
     "@openzeppelin/contracts": "^4.3.1",
     "@openzeppelin/test-helpers": "^0.5.13",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "clsx": "^1.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
-    "web-vitals": "^1.0.1",
-    "@material-ui/pickers": "^3.3.10"
+    "web-vitals": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -43,6 +45,7 @@
     ]
   },
   "devDependencies": {
+    "@material-ui/core": "^4.11.4",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-etherscan": "^2.1.5",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
@@ -50,7 +53,6 @@
     "dotenv": "^10.0.0",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.0",
-    "hardhat": "^2.4.1",
-    "@material-ui/core": "^4.11.4"
+    "hardhat": "^2.4.1"
   }
 }
