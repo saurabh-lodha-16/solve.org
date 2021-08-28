@@ -16,6 +16,7 @@ function GetIdeas() {
 
   const [ideas, setIdeas] = useState();
   const [status, setStatus] = useState();
+  const [ideaId, setIdeaId] = useState();
 
   async function getIdeas() {
     setStatus("Loading...");
@@ -65,6 +66,77 @@ function GetIdeas() {
       </center>
     </div>
   );
+
+  async function toVote() {
+    setStatus("Loading...");
+  
+    if (typeof window.ethereum != undefined) {
+      await requestAccount();
+  
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const votingContract = new ethers.Contract(
+        constants.VotingContract,
+        VotingContract.abi,
+        signer
+      );
+  
+      try {
+        let submitVoteTransaction = await votingContract.voteForIdea(
+          ideaId
+        );
+  
+        let receipt = await submitVoteTransaction.wait();
+        console.log(receipt);
+  
+        //let ideaId = receipt.events[2].args[0].toString();
+  
+        setStatus(`Idea Voted successfully`);
+      } catch (err) {
+        console.log(err);
+        setStatus("Failed to vote for idea");
+      }
+    }
+  }
+  
+  
+  
+  async function claimingFunds() {
+    setStatus("Loading...");
+  
+    if (typeof window.ethereum != undefined) {
+      await requestAccount();
+  
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const votingContract = new ethers.Contract(
+        constants.VotingContract,
+        VotingContract.abi,
+        signer
+      );
+  
+      try {
+        let submitClaimTransaction = await votingContract.claimFunds(
+          ideaId
+        );
+  
+        let receipt = await submitClaimTransaction.wait();
+        console.log(receipt);
+  
+        //let ideaId = receipt.events[2].args[0].toString();
+  
+        setStatus(`Idea funds claimed successfully`);
+      } catch (err) {
+        console.log(err);
+        setStatus("Failed to claim funds for idea");
+      }
+    }
+  }
 }
 
+
+
 export { GetIdeas };
+
+
+
