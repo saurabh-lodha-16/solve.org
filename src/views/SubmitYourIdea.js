@@ -5,8 +5,9 @@ import { useStyles } from "../styles";
 import { useState } from "react";
 
 import { ethers } from 'ethers';
-import * as constants from "../constants";
 import VotingContract from "../abis/VotingContract.json";
+
+const constants = require("../abis/contract-address.json");
 
 function SubmitYourIdea() {
     const classes = useStyles();
@@ -15,6 +16,7 @@ function SubmitYourIdea() {
     const [ideaSol, setIdeaSol] = useState();
     const [reqEth, setReqEth] = useState();
     const [status, setStatus] = useState();
+    
 
     function validateIdeaTitleInput() {
         return ideaTitle ? true : false;
@@ -58,7 +60,7 @@ function SubmitYourIdea() {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
             const votingContract = new ethers.Contract(
-                constants.CONTRACT_ADDR,
+                constants.VotingContract,
                 VotingContract.abi,
                 signer
             );
@@ -78,7 +80,7 @@ function SubmitYourIdea() {
                 let receipt = await submitIdeaTransaction.wait();
                 console.log(receipt);
 
-                let ideaId = receipt.events[2].args[0].toString();
+                //let ideaId = receipt.events[2].args[0].toString();
 
                 setStatus(`Idea Submitted successfully`);
             }

@@ -7,14 +7,25 @@ import { useState } from "react";
 
 import { ethers } from 'ethers';
 import * as constants from "../constants";
-import Streaming from "../abis/Streaming.json";
+import Token from "../abis/Token.json";
 
 function GetVotingTokens() {
     const classes = useStyles();
-    const [streamId, setStreamId] = useState();
+    const [reqEth, setReqEth] = useState();
+    const [solveTokens, setSolveTokens] = useState();
     const [status, setStatus] = useState();
 
+    function validateReqEthInput() {
+        return reqEth >= 0.01 ? true : false;
+    }
+
     async function getVotingTokens() {
+
+        if (!validateReqEthInput()) {
+            setStatus("Amount of ETH should be greater than 0.01ETH");
+            return;
+        }
+
         setStatus("Loading...");
 
         if (typeof window.ethereum != undefined) {
@@ -22,25 +33,23 @@ function GetVotingTokens() {
 
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
-            const streamingContract = new ethers.Contract(
+            const tokenContract = new ethers.Contract(
                 constants.CONTRACT_ADDR,
-                Streaming.abi,
+                Token.abi,
                 signer
             );
 
             try {
-                let streamingTransaction = await streamingContract.cancelStream(
-                    streamId
-                );
+                let getVoitingToken = await tokenContract.mint();
 
-                let receipt = await streamingTransaction.wait();
+                let receipt = await getVoitingToken.wait();
                 console.log(receipt);
 
-                setStatus(`Stream stopped successfully`);
+                setStatus(`token purchase stopped successfully`);
             }
             catch (err) {
                 console.log(err);
-                setStatus("Failed to stop stream");
+                setStatus("Failed to purchase token");
             }
         }
     }
@@ -48,22 +57,18 @@ function GetVotingTokens() {
     return (
         <div>
             <center>
-                <TextField
+            <TextField
                     className={classes.formElement}
-                   // onChange={e => setStreamId(e.target.value)}
-                    type="number"
-                    label="Amount of Ether" /><br /><br />
-                    <TextField
+                    onChange={e => setReqEth(e.target.value)} type="number" label="Amount of Ether" /><br />
+            <TextField
                     className={classes.formElement}
-                   // onChange={e => setStreamId(e.target.value)}
-                    type="text"
-                    label="Number of SOLVE Tokens" /><br /><br />
-                   
+                    onChange={e => setSolveTokens(e.target.value)} label="Number of SOLVE Tokens" /><br />
                 <Button
+                onClick={getVotingTokens}
                 className={classes.formElement}
                 variant="contained"
                 color="primary"
-                >Submit Your Idea</Button>
+                >Get SOLVE tokens</Button>
                 <p>{status}</p>
             </center>
         </div>
