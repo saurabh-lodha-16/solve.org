@@ -22,6 +22,7 @@ function GetIdeas() {
 
   const [ideas, setIdeas] = useState(() => new Map());
   const [status, setStatus] = useState();
+  const [balance, setBalance] = useState();
 
   const showIdeaCards = (allIdeas) => {
     return allIdeas.map((idea) => {
@@ -101,6 +102,32 @@ function GetIdeas() {
       <Grid container>{showIdeaCards([1, 2, 3, 4])}</Grid>
     </Container>
   );
+
+
+  async function getBalance() {
+    setStatus("Loading...");
+    if (typeof window.ethereum != undefined) {
+      await requestAccount();
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const getBalanceContract = new ethers.Contract(
+        constants.SolveToken,
+        SolveToken.abi,
+        signer
+      );
+
+      try {
+        let balanceOf = Number(await getBalanceContract.getBalanceOf(signer.getAddress));
+        console.log(balanceOf);
+        setBalance(balanceOf);
+
+      } catch (err) {
+        console.log(err);
+        setStatus("failed getting balance of signer");
+      }
+    }
+  }
 
   async function voteForIdea(ideaId) {
     setStatus("Loading...");
