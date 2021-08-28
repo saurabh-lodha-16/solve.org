@@ -1,78 +1,88 @@
 //stopstream
 import { requestAccount } from "../utils";
 
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button } from "@material-ui/core";
 import { useStyles } from "../styles";
 import { useState } from "react";
 
-import { ethers } from 'ethers';
-import * as constants from "../constants";
-import Token from "../abis/Token.json";
+import { BigNumber, ethers } from "ethers";
+
+import SolveToken from "../abis/SolveToken.json";
+const constants = require("../abis/contract-address.json");
 
 function GetVotingTokens() {
-    const classes = useStyles();
-    const [reqEth, setReqEth] = useState();
-    const [solveTokens, setSolveTokens] = useState();
-    const [status, setStatus] = useState();
+  const classes = useStyles();
+  const [reqEth, setReqEth] = useState();
+  const [solveTokens, setSolveTokens] = useState();
+  const [status, setStatus] = useState();
 
-    function validateReqEthInput() {
-        return reqEth >= 0.01 ? true : false;
+  function validateReqEthInput() {
+    return reqEth >= 0.01 ? true : false;
+  }
+
+  async function getVotingTokens() {
+    if (!validateReqEthInput()) {
+      setStatus("Amount of ETH should be greater than 0.01ETH");
+      return;
     }
 
-    async function getVotingTokens() {
+    setStatus("Loading...");
 
-        if (!validateReqEthInput()) {
-            setStatus("Amount of ETH should be greater than 0.01ETH");
-            return;
-        }
+    if (typeof window.ethereum != undefined) {
+      await requestAccount();
 
-        setStatus("Loading...");
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const tokenContract = new ethers.Contract(
+        constants.SolveToken,
+        SolveToken.abi,
+        signer
+      );
 
-        if (typeof window.ethereum != undefined) {
-            await requestAccount();
+      try {
+        let getVoitingToken = await tokenContract.mint({
+          value: BigNumber.from(String(1e18 * reqEth)),
+        });
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const tokenContract = new ethers.Contract(
-                constants.CONTRACT_ADDR,
-                Token.abi,
-                signer
-            );
+        let receipt = await getVoitingToken.wait();
+        console.log(receipt);
 
-            try {
-                let getVoitingToken = await tokenContract.mint();
-
-                let receipt = await getVoitingToken.wait();
-                console.log(receipt);
-
-                setStatus(`token purchase stopped successfully`);
-            }
-            catch (err) {
-                console.log(err);
-                setStatus("Failed to purchase token");
-            }
-        }
+        setStatus(`token purchase stopped successfully`);
+      } catch (err) {
+        console.log(err);
+        setStatus("Failed to purchase token");
+      }
     }
+  }
 
-    return (
-        <div>
-            <center>
-            <TextField
-                    className={classes.formElement}
-                    onChange={e => setReqEth(e.target.value)} type="number" label="Amount of Ether" /><br />
-            <TextField
-                    className={classes.formElement}
-                    onChange={e => setSolveTokens(e.target.value)} label="Number of SOLVE Tokens" /><br />
-                <Button
-                onClick={getVotingTokens}
-                className={classes.formElement}
-                variant="contained"
-                color="primary"
-                >Get SOLVE tokens</Button>
-                <p>{status}</p>
-            </center>
-        </div>
-    )
+  return (
+    <div>
+      <center>
+        <TextField
+          className={classes.formElement}
+          onChange={(e) => setReqEth(e.target.value)}
+          type="number"
+          label="Amount of Ether"
+        />
+        <br />
+        <TextField
+          className={classes.formElement}
+          onChange={(e) => setSolveTokens(e.target.value)}
+          label="Number of SOLVE Tokens"
+        />
+        <br />
+        <Button
+          onClick={getVotingTokens}
+          className={classes.formElement}
+          variant="contained"
+          color="primary"
+        >
+          Get SOLVE tokens
+        </Button>
+        <p>{status}</p>
+      </center>
+    </div>
+  );
 }
 
 export { GetVotingTokens };
