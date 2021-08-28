@@ -8,9 +8,6 @@ import { TextField, Button } from "@material-ui/core";
 // Importing this after TextField to get precedence
 import { useStyles } from "../styles";
 
-import Streaming from "../abis/Streaming.json";
-import Token from "../abis/Token.json";
-
 import VotingContract from "../abis/VotingContract.json";
 
 const constants = require("../abis/contract-address.json");
@@ -34,8 +31,18 @@ function GetIdeas() {
       );
 
       try {
-        let ideasMappingTransaction = await getIdeasContract.ideas(1);
-        console.log(ideasMappingTransaction);
+
+        let totalIdeas = Number(await getIdeasContract.getTotalIdeas());
+         let allIdeas = [];
+        for (var i = 1; i <= totalIdeas; i++) {
+            let ideasMappingTransaction = await getIdeasContract.ideas(i);
+            allIdeas.push(ideasMappingTransaction);
+            
+        } 
+        console.log(allIdeas);
+        setIdeas(allIdeas);
+        console.log(ideas);
+        
       } catch (err) {
         console.log(err);
         setStatus("idea fetching failed");
