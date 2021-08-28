@@ -52,16 +52,17 @@ function App() {
           <Button color="secondary" size="large" variant="outlined">White-Paper</Button>
 
         </Toolbar>
-        <Tabs  value={tabValue} onChange={handleTabChange} aria-label="Solve.Org">
+        <Tabs  centered value={tabValue} onChange={handleTabChange} aria-label="Solve.Org">
+        
         
         
         <Tab label="Home"  {...a11yProps(0)} />
           <Tab label="Submit Idea" {...a11yProps(1)} />
-          <Tab label="Get Voting Tokens" {...a11yProps(2)} />
+          <Tab label="Get Tokens" {...a11yProps(2)} />
          
         </Tabs>
       </AppBar>
-
+      
       {tabValue === 0 && (<GetIdeas/>)}
      {tabValue === 1 && (<SubmitYourIdea/>)}
       {tabValue === 2 && (<GetVotingTokens />)}
