@@ -39,11 +39,6 @@ contract SolveToken is Context, ERC20 {
         return (address(this).balance);
     }
     
-    //Ask Shubham
-    //Can we add another param here for address of the person who will receive these ethers.
-    //Right now I have kept it to be generic.
-    //do I need to specify gas here. I guess yes ?
-    //ask shubham if we need to add events in interfaces for the functions we extended.
     function burn(uint256 amount)
          public virtual
     {
@@ -51,7 +46,7 @@ contract SolveToken is Context, ERC20 {
         uint256 receivableEther = amount.div(100);
         require(receivableEther <= this.getTotalEtherInContract(), 'Contract does not have enough ETHER');
         _burn(msg.sender, amount);
-        (bool sent,) = payable(msg.sender).call{value: receivableEther, gas: 100000}("");
+        (bool sent,) = payable(msg.sender).call{value: receivableEther}("");
         require(sent, "Failed to send Ether");
         emit SolveBurned(msg.sender, amount);
     }

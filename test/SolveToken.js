@@ -17,14 +17,6 @@ describe("SolveToken Contract", () => {
     deployer = (await ethers.getSigners())[0];
   });
 
-  it("has a name", async function () {
-    expect(await solveToken.name()).to.equal(ConstructorParams.tokenName);
-  });
-
-  it("has a symbol", async function () {
-    expect(await solveToken.symbol()).to.equal(ConstructorParams.tokenSymbol);
-  });
-
   it("user can mint tokens by giving ether", async function () {
     await solveToken.mint({
       value: BigNumber.from(String(1e18)),
@@ -35,7 +27,7 @@ describe("SolveToken Contract", () => {
     );
   });
 
-  it("user can burn tokens and receive etherr", async function () {
+  it("user can burn tokens and receive ether", async function () {
     await solveToken.burn(BigNumber.from(String(1e20)));
 
     expect(await solveToken.balanceOf(deployer.address)).to.be.equal(
