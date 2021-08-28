@@ -81,7 +81,8 @@ function GetIdeas() {
         let receipt = await submitVoteTransaction.wait();
         console.log(receipt);
   
-        //let ideaId = receipt.events[2].args[0].toString();
+        let ideaFromContract = await votingContract.ideas(ideaId);
+        setIdeas(ideas.set(ideaId, ideaFromContract));
   
         setStatus(`Idea Voted successfully`);
       } catch (err) {
@@ -115,8 +116,9 @@ function GetIdeas() {
         let receipt = await submitClaimTransaction.wait();
         console.log(receipt);
   
-        //let ideaId = receipt.events[2].args[0].toString();
-  
+        let ideaFromContract = await votingContract.ideas(ideaId);
+        setIdeas(ideas.set(ideaId, ideaFromContract));
+        
         setStatus(`Idea funds claimed successfully`);
       } catch (err) {
         console.log(err);
