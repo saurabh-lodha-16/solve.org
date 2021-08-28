@@ -1,6 +1,5 @@
-import { CreateStream } from "./views/CreateStream";
+import { GetIdeas } from "./views/GetIdeas";
 import { SubmitYourIdea } from "./views/SubmitYourIdea";
-import { WithdrawFromStream } from "./views/WithdrawFromStream";
 import { GetVotingTokens } from "./views/GetVotingTokens";
 
 import Tab from '@material-ui/core/Tab';
@@ -29,16 +28,14 @@ function App() {
       <AppBar position="static">
         <Tabs value={tabValue} onChange={handleTabChange} aria-label="Solve.Org">
         <Tab label="Home" {...a11yProps(0)} />
-          <Tab label="Funded Ideas" {...a11yProps(1)} />
-          <Tab label="Submit Your Idea" {...a11yProps(2)} />
-          <Tab label="Get Voting Tokens" {...a11yProps(3)} />
+          <Tab label="Submit Your Idea" {...a11yProps(1)} />
+          <Tab label="Get Voting Tokens" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
 
-      {tabValue === 0 && (<CreateStream />)}
-      {tabValue === 1 && (<WithdrawFromStream />)}
-      {tabValue === 2 && (<SubmitYourIdea/>)}
-      {tabValue === 3 && (<GetVotingTokens />)}
+      {tabValue === 0 && (<GetIdeas/>)}
+     {tabValue === 1 && (<SubmitYourIdea/>)}
+      {tabValue === 2 && (<GetVotingTokens />)}
 
     </div>
   );
