@@ -2,19 +2,15 @@ import { useState } from "react";
 import { ethers } from "ethers";
 
 import { requestAccount } from "../utils";
-
-import { TextField, Button } from "@material-ui/core";
-
-// Importing this after TextField to get precedence
+import { Button } from "@material-ui/core";
 import { useStyles } from "../styles";
-
 import VotingContract from "../abis/VotingContract.json";
-
 const constants = require("../abis/contract-address.json");
+
 function GetIdeas() {
   const classes = useStyles();
 
-  const [ideas, setIdeas] = useState();
+  const [ideas, setIdeas] = useState(() => new Map());
   const [status, setStatus] = useState();
   const [ideaId, setIdeaId] = useState();
 
@@ -34,16 +30,12 @@ function GetIdeas() {
       try {
 
         let totalIdeas = Number(await getIdeasContract.getTotalIdeas());
-         let allIdeas = [];
-        for (var i = 1; i <= totalIdeas; i++) {
-            let ideasMappingTransaction = await getIdeasContract.ideas(i);
-            allIdeas.push(ideasMappingTransaction);
-            
-        } 
-        console.log(allIdeas);
-        setIdeas(allIdeas);
-        console.log(ideas);
         
+        for (var i = 1; i <= totalIdeas; i++) {
+            let ideaFromContract = await getIdeasContract.ideas(i);
+            setIdeas(ideas.set(i, ideaFromContract));
+        } 
+               
       } catch (err) {
         console.log(err);
         setStatus("idea fetching failed");
