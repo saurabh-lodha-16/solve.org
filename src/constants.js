@@ -1,0 +1,22 @@
+const RINKEBY = "RINKEBY";
+const MATIC_MUMBAI = "MATIC_MUMBAI";
+
+
+const CURRENT_NETWORK = RINKEBY;
+let CONTRACT_ADDR;
+
+if (CURRENT_NETWORK === RINKEBY) {
+    CONTRACT_ADDR = "0xc43dD2E01E1643763E87cDd3abb35F544d5b7113";
+
+    // Not being used, adding this to keep track
+    // const TOKEN_ADDR = "0xC4fa43fDF07C171822BcE634B73EfBF88020672E";
+    // const DUMMY_ADDR = "0x017F7DDCc5c1ab6bCe2a6eb51Dc32A65eD9D5fbe";
+}
+else if (CURRENT_NETWORK === MATIC_MUMBAI) {
+    CONTRACT_ADDR = "0xe91ff9511dfD9B24A90BdB0Dd85d1755431d1c7B";
+
+    // Not being used, adding this to keep track
+    // const TOKEN_ADDR = "0x055c921b111ffC45bCef9BE9A50748206bfBAf91";
+    // const DUMMY_ADDR = "0xaFC7DCE6306136E0c22EB3c857604a8c0219fBd7";
+}
+export { CONTRACT_ADDR };
