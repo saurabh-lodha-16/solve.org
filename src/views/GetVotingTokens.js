@@ -6,7 +6,7 @@ import { useStyles } from "../styles";
 import { useState } from "react";
 
 import { BigNumber, ethers } from "ethers";
-
+import Box from '@material-ui/core/Box';
 import SolveToken from "../abis/SolveToken.json";
 const constants = require("../abis/contract-address.json");
 
@@ -67,20 +67,20 @@ function GetVotingTokens() {
           //add validation to avoid negative numbers
           type="number"
           label="Amount of Ether"
+          color="secondary"
         />
         <br />
-        <TextField
-          className={classes.formElement}
-          type="number"
-          value={solveTokens}
-          label="Number of SOLVE Tokens"
-        />
+       <br/>
+        <Box component="span" visibility="visible" p={1} m={1} bgcolor="background.paper">
+        {solveTokens} SOLVE Tokens
+        </Box>
         <br />
+        <br/>
         <Button
           onClick={getVotingTokens}
-          className={classes.formElement}
+          className={classes.root}
           variant="contained"
-          color="primary"
+          color="secondary"
         >
           Get SOLVE tokens
         </Button>

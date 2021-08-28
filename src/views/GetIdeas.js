@@ -46,13 +46,14 @@ function GetIdeas() {
   return (
     <div>
       <center>
+        <br/>
         <Button
-          className={classes.formElement}
+          className={classes.root}
           variant="contained"
-          color="primary"
+          color="secondary"
           onClick={getIdeas}
         >
-          connect to metamask
+          Connect to Metamask
         </Button>
         <p>{status}</p>
       </center>

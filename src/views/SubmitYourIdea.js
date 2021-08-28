@@ -93,31 +93,37 @@ function SubmitYourIdea() {
           className={classes.formElement}
           onChange={(e) => setIdeaTitle(e.target.value)}
           label="Idea Title"
+          color="secondary"
         />
         <br />
         <TextField
           className={classes.formElement}
           onChange={(e) => setIdeaDesc(e.target.value)}
           label="Idea Description"
+          color="secondary"
         />
         <br />
         <TextField
           className={classes.formElement}
           onChange={(e) => setIdeaSol(e.target.value)}
           label="Idea Solution"
+          color="secondary"
         />
         <br />
         <TextField
           className={classes.formElement}
           onChange={(e) => setReqEth(e.target.value)}
           label="Ether Required"
+          color="secondary"
         />
         <br />
+        <br/>
         <Button
           onClick={submitIdea}
-          className={classes.formElement}
+          className={classes.root}
           variant="contained"
-          color="primary"
+          color="secondary"
+          
         >
           Submit Your Idea
         </Button>
