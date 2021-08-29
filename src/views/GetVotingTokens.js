@@ -1,14 +1,18 @@
 //stopstream
 import { requestAccount } from "../utils";
 
-import { TextField, Button } from "@material-ui/core";
+import { TextField, Button, Typography } from "@material-ui/core";
 import { useStyles } from "../styles";
 import { useState } from "react";
 
 import { BigNumber, ethers } from "ethers";
-
+import Box from '@material-ui/core/Box';
 import SolveToken from "../abis/SolveToken.json";
 const constants = require("../abis/contract-address.json");
+
+function validateToken(tokenValue) {
+  return tokenValue >= 0? true : false;
+}
 
 function GetVotingTokens() {
   const classes = useStyles();
@@ -58,33 +62,39 @@ function GetVotingTokens() {
   return (
     <div>
       <center>
+      <Box margin="3%">
         <TextField
           className={classes.formElement}
           onChange={(e) => {
+            if(validateToken(e.target.value))
+            {
             setReqEth(e.target.value);
             setSolveTokens(e.target.value * 100);
-          }}
+          }
+        else{
+        setSolveTokens(0);
+        e.target.value=null;
+        }
+        }}
           //add validation to avoid negative numbers
           type="number"
           label="Amount of Ether"
+          color="secondary"
         />
         <br />
-        <TextField
-          className={classes.formElement}
-          type="number"
-          value={solveTokens}
-          label="Number of SOLVE Tokens"
-        />
-        <br />
-        <Button
+       <br/>
+        
+        <br/>
+        <Button 
           onClick={getVotingTokens}
-          className={classes.formElement}
+         className={classes.root}
           variant="contained"
-          color="primary"
+          color="secondary"
         >
-          Get SOLVE tokens
+         Get {solveTokens} SOLVE Tokens 
         </Button>
         <p>{status}</p>
+        </Box>
       </center>
     </div>
   );

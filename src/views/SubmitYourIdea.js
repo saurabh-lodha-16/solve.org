@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { ethers } from "ethers";
 import VotingContract from "../abis/VotingContract.json";
+import Box from "@material-ui/core/Box";
 
 const constants = require("../abis/contract-address.json");
 
@@ -88,41 +89,61 @@ function SubmitYourIdea() {
 
   return (
     <div>
+     
       <center>
+      
+      <Box  width="65%" margin="3%">
+       
+    
         <TextField
           className={classes.formElement}
           onChange={(e) => setIdeaTitle(e.target.value)}
           label="Idea Title"
+          color="secondary"
+          p={2}
         />
+       
         <br />
         <TextField
           className={classes.formElement}
           onChange={(e) => setIdeaDesc(e.target.value)}
           label="Idea Description"
+          color="secondary"
         />
+       
         <br />
         <TextField
           className={classes.formElement}
           onChange={(e) => setIdeaSol(e.target.value)}
           label="Idea Solution"
+          color="secondary"
         />
+        
         <br />
         <TextField
           className={classes.formElement}
           onChange={(e) => setReqEth(e.target.value)}
           label="Ether Required"
+          color="secondary"
         />
+      
         <br />
+        <br/>
         <Button
           onClick={submitIdea}
-          className={classes.formElement}
+          className={classes.root}
           variant="contained"
-          color="primary"
+          color="secondary"
+          
         >
           Submit Your Idea
         </Button>
+       
         <p>{status}</p>
+      
+        </Box>
       </center>
+     
     </div>
   );
 }
