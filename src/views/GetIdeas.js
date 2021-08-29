@@ -83,8 +83,8 @@ function GetIdeas() {
                 />
               </IconButton>
               <IconButton color="secondary" aria-label="vote">
-                &nbsp; <MonetizationOnIcon /> &nbsp;{" "}
-                {Number(idea.requiredDonationInEthers) * 100} SOLVE
+                
+                Target: {Number(idea.requiredDonationInEthers) * 100} SOLVE&nbsp; <MonetizationOnIcon /> &nbsp;{" "}
               </IconButton>
               {!approval ? (
                 <IconButton
@@ -142,11 +142,13 @@ function GetIdeas() {
       {!loading ? (
         <Grid container>{showIdeaCards()}</Grid>
       ) : (
-        <Grid container>
+        <Grid container style={{position: 'relative'}}>
           <CircularProgress
             size={100}
             className={classes.loader}
             color="secondary"
+            style={{marginLeft: '48%', marginTop:'25%'}}
+            
           />
         </Grid>
       )}

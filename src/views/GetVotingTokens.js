@@ -50,11 +50,13 @@ function GetVotingTokens() {
 
         let receipt = await getVoitingToken.wait();
         console.log(receipt);
-
-        setStatus(`token purchase stopped successfully`);
+        
+        setStatus(`Token purchased successfully`);
+        
+        
       } catch (err) {
         console.log(err);
-        setStatus("Failed to purchase token");
+        setStatus("Failed to purchase tokens");
       }
     }
   }
@@ -62,7 +64,7 @@ function GetVotingTokens() {
   return (
     <div>
       <center>
-        <Box margin="3%">
+        <Box margin="10%"> 
           <TextField
             className={classes.formElement}
             onChange={(e) => {
@@ -76,7 +78,7 @@ function GetVotingTokens() {
             }}
             //add validation to avoid negative numbers
             type="number"
-            label="Amount of Ether"
+            label="Ether"
             color="secondary"
           />
           <br />

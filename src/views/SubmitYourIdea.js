@@ -31,21 +31,21 @@ function SubmitYourIdea() {
   }
 
   function validateReqEthInput() {
-    return reqEth >= 0.01 ? true : false;
+    return reqEth >= 1 ? true : false;
   }
 
   async function submitIdea() {
     if (!validateIdeaTitleInput()) {
-      setStatus("Please enter an Idea Title");
+      setStatus("Please enter a Title");
       return;
     } else if (!validateIdeaDescInput()) {
-      setStatus("Please enter an Idea description");
+      setStatus("Please enter a description");
       return;
     } else if (!validateIdeaSolInput()) {
-      setStatus("Please enter an Idea solution");
+      setStatus("Please enter a solution");
       return;
     } else if (!validateReqEthInput()) {
-      setStatus("Invalid Ether Amount!");
+      setStatus("Minimum Ether Required is 1");
       return;
     }
     setStatus("Loading...");
@@ -77,12 +77,12 @@ function SubmitYourIdea() {
         let receipt = await submitIdeaTransaction.wait();
         console.log(receipt);
 
-        //let ideaId = receipt.events[2].args[0].toString();
+       
 
-        setStatus(`Idea Submitted successfully`);
+        setStatus(`Idea Submitted Successfully`);
       } catch (err) {
         console.log(err);
-        setStatus("Failed to submit idea");
+        setStatus("Failed to Submit Idea");
       }
     }
   }
@@ -92,13 +92,13 @@ function SubmitYourIdea() {
      
       <center>
       
-      <Box  width="65%" margin="3%">
+      <Box  width="65%" margin="10%">
        
     
         <TextField
           className={classes.formElement}
           onChange={(e) => setIdeaTitle(e.target.value)}
-          label="Idea Title"
+          label="Title"
           color="secondary"
           p={2}
         />
@@ -107,7 +107,7 @@ function SubmitYourIdea() {
         <TextField
           className={classes.formElement}
           onChange={(e) => setIdeaDesc(e.target.value)}
-          label="Idea Description"
+          label="Description"
           color="secondary"
         />
        
@@ -115,7 +115,7 @@ function SubmitYourIdea() {
         <TextField
           className={classes.formElement}
           onChange={(e) => setIdeaSol(e.target.value)}
-          label="Idea Solution"
+          label="Solution"
           color="secondary"
         />
         
@@ -136,7 +136,7 @@ function SubmitYourIdea() {
           color="secondary"
           
         >
-          Submit Your Idea
+          Submit
         </Button>
        
         <p>{status}</p>
