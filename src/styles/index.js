@@ -27,6 +27,10 @@ const useStyles = makeStyles({
     marginLeft: 10,
     marginBottom: 10,
   },
+  loader: {
+    margin: 50,
+    display: "flex",
+  },
 });
 
 export { useStyles };
