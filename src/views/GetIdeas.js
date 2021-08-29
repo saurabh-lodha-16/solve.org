@@ -106,7 +106,7 @@ function GetIdeas() {
 
   async function getIdeas() {
     const provider = new ethers.providers.JsonRpcProvider(
-      `https://eth-ropsten.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`
+      `https://eth-rinkeby.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`
     );
     const getIdeasContract = new ethers.Contract(
       constants.VotingContract,
@@ -155,7 +155,7 @@ function GetIdeas() {
 
   async function getBalance(address) {
     const provider = new ethers.providers.JsonRpcProvider(
-      `https://eth-ropsten.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`
+      `https://eth-rinkeby.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`
     );
     const solveTokenContract = new ethers.Contract(
       constants.SolveToken,

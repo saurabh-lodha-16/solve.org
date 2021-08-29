@@ -20,7 +20,7 @@ let networks = {};
 if (NETWORK === TEST_NETWORK) {
   networks = {
     test_network: {
-      url: `https://eth-ropsten.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+      url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
       accounts: [`0x${WALLET_PRIVATE_KEY}`],
     },
   };
