@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import { BigNumber, ethers } from "ethers";
 import { requestAccount } from "../utils";
 import {
   Container,
@@ -8,130 +8,228 @@ import {
   CardContent,
   Typography,
   IconButton,
+  CircularProgress,
+  Snackbar,
 } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 import { useStyles } from "../styles";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CircularProgressWithLabel from "../styles/circularWithLabel";
-import { Button } from "@material-ui/core";
 import VotingContract from "../abis/VotingContract.json";
+import SolveToken from "../abis/SolveToken.json";
+import Alert from "@material-ui/lab/Alert";
+import { toast } from "react-toastify";
 const constants = require("../abis/contract-address.json");
 
 function GetIdeas() {
   const classes = useStyles();
 
   const [ideas, setIdeas] = useState(() => new Map());
-  const [status, setStatus] = useState();
   const [balance, setBalance] = useState();
+  const [totalIdeas, setTotalIdeas] = useState(0);
+  const [loading, setIsLoading] = useState(true);
+  const [approval, setApproval] = useState(false);
 
-  const showIdeaCards = (allIdeas) => {
-    return allIdeas.map((idea) => {
-      return (
-        <Card className={classes.root} variant="outlined">
-          <CardContent>
-            <Typography color="secondary" variant="h5" component="h2">
-              Idea Title
-            </Typography>
-            <Typography className={classes.pos}>
-              is simply dummy text of the printing and typesetting industry.
-              Lorem Ipsum has been the industry's standard dummy text ever since
-              the 1500s, when an unknown printer took a galley of type and
-              scrambled it to make a type specimen book. It has survived
-            </Typography>
-            <Typography color="secondary" variant="h5" component="h2">
-              Solution
-            </Typography>
-            <Typography className={classes.pos}>
-              is simply dummy text of the printing and typesetting industry.
-              Lorem Ipsum has been the industry's standard dummy text ever since
-              the 1500s, when an unknown printer took a galley of type and
-              scrambled it to make a type specimen book. It has survived is
-              simply dummy text of the printing and typesetting industry. Lorem
-            </Typography>
-          </CardContent>
-          <div className={classes.infoBar}>
-            <IconButton color="secondary" aria-label="vote">
-              &nbsp; <ThumbUpIcon /> &nbsp; 25
-            </IconButton>
-            <IconButton aria-label="voteStatus">
-              <CircularProgressWithLabel
-                thickness="5"
-                variant="static"
-                color="secondary"
-                value={80}
-              />
-            </IconButton>
-            {/* <IconButton color="secondary" aria-label="claim">
-              Claim &nbsp; <MonetizationOnIcon />
-            </IconButton> */}
-          </div>
-        </Card>
-      );
-    });
+  const showIdeaCards = () => {
+    if (ideas.size > 0 && totalIdeas > 0) {
+      return Array.from(Array(totalIdeas).keys()).map((index) => {
+        let idea = ideas.get(index + 1);
+        return (
+          <Card key={idea} className={classes.root} variant="outlined">
+            <CardContent>
+              <Typography color="secondary" variant="h5" component="h2">
+                {idea.title}
+              </Typography>
+              <Typography className={classes.pos}>
+                {idea.description}
+              </Typography>
+              <Typography color="secondary" variant="h5" component="h2">
+                Solution
+              </Typography>
+              <Typography className={classes.pos}>{idea.solution}</Typography>
+            </CardContent>
+            <div className={classes.infoBar}>
+              {idea.isFunded ? (
+                idea.hasClaimed ? (
+                  <IconButton color="secondary" aria-label="claim">
+                    Donations Claimed &nbsp; <MonetizationOnIcon />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    onClick={() => claimFunds(index + 1)}
+                    color="secondary"
+                    aria-label="claim"
+                  >
+                    Claim &nbsp; <MonetizationOnIcon />
+                  </IconButton>
+                )
+              ) : (
+                <IconButton
+                  color="secondary"
+                  aria-label="vote"
+                  onClick={() => voteForIdea(index + 1)}
+                >
+                  &nbsp; <ArrowUpwardIcon /> &nbsp; {Number(idea.totalVotes)}
+                </IconButton>
+              )}
+              <IconButton aria-label="voteStatus">
+                <CircularProgressWithLabel
+                  thickness={5}
+                  variant="determinate"
+                  color="secondary"
+                  value={
+                    Number(idea.totalVotes) /
+                    Number(idea.requiredDonationInEthers)
+                  }
+                />
+              </IconButton>
+              <IconButton color="secondary" aria-label="vote">
+                &nbsp; <MonetizationOnIcon /> &nbsp;{" "}
+                {Number(idea.requiredDonationInEthers) * 100} SOLVE
+              </IconButton>
+              {!approval ? (
+                <IconButton
+                  onClick={() => approve()}
+                  color="secondary"
+                  aria-label="approval"
+                >
+                  &nbsp; <ThumbUpIcon /> &nbsp; Approve
+                </IconButton>
+              ) : (
+                <IconButton />
+              )}
+            </div>
+          </Card>
+        );
+      });
+    }
   };
 
   async function getIdeas() {
-    setStatus("Loading...");
-    if (typeof window.ethereum != undefined) {
-      await requestAccount();
+    const provider = new ethers.providers.JsonRpcProvider(
+      `https://eth-ropsten.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`
+    );
+    const getIdeasContract = new ethers.Contract(
+      constants.VotingContract,
+      VotingContract.abi,
+      provider
+    );
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const getIdeasContract = new ethers.Contract(
-        constants.VotingContract,
-        VotingContract.abi,
-        signer
-      );
-
-      try {
-        let totalIdeas = Number(await getIdeasContract.getTotalIdeas());
-
-        for (var i = 1; i <= totalIdeas; i++) {
-          let ideaFromContract = await getIdeasContract.ideas(i);
-          setIdeas(ideas.set(i, ideaFromContract));
-        }
-      } catch (err) {
-        console.log(err);
-        setStatus("idea fetching failed");
+    try {
+      let totalIdeas = Number(await getIdeasContract.getTotalIdeas());
+      setTotalIdeas(totalIdeas);
+      for (let i = 1; i <= totalIdeas; i++) {
+        const ideaFromContract = await getIdeasContract.ideas(i);
+        setIdeas(ideas.set(i, ideaFromContract));
       }
+      if (ideas.size > 0 && totalIdeas > 0) {
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.log(err);
     }
   }
 
+  useEffect(() => {
+    const getIdeasAsyncFunction = async () => {
+      await getIdeas();
+      await checkAllowance();
+    };
+    getIdeasAsyncFunction();
+  }, [ideas]);
+
   return (
     <Container fixed>
-      <Grid container>{showIdeaCards([1, 2, 3, 4])}</Grid>
+      {!loading ? (
+        <Grid container>{showIdeaCards()}</Grid>
+      ) : (
+        <Grid container>
+          <CircularProgress
+            size={100}
+            className={classes.loader}
+            color="secondary"
+          />
+        </Grid>
+      )}
     </Container>
   );
 
+  async function getBalance(address) {
+    const provider = new ethers.providers.JsonRpcProvider(
+      `https://eth-ropsten.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_API_KEY}`
+    );
+    const solveTokenContract = new ethers.Contract(
+      constants.SolveToken,
+      SolveToken.abi,
+      provider
+    );
+    try {
+      const balance = Number(await solveTokenContract.balanceOf(address));
+      setBalance(balance);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
-  async function getBalance() {
-    setStatus("Loading...");
+  async function approve() {
     if (typeof window.ethereum != undefined) {
       await requestAccount();
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const getBalanceContract = new ethers.Contract(
+      const solveTokenContract = new ethers.Contract(
         constants.SolveToken,
         SolveToken.abi,
         signer
       );
 
       try {
-        let balanceOf = Number(await getBalanceContract.getBalanceOf(signer.getAddress));
-        console.log(balanceOf);
-        setBalance(balanceOf);
-
+        let approveTransaction = await solveTokenContract.approve(
+          constants.VotingContract,
+          BigNumber.from(String(1e18))
+        );
+        await approveTransaction.wait();
+        await checkAllowance();
       } catch (err) {
         console.log(err);
-        setStatus("failed getting balance of signer");
+      }
+    }
+  }
+
+  async function checkAllowance() {
+    if (typeof window.ethereum != undefined) {
+      await requestAccount();
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const solveTokenContract = new ethers.Contract(
+        constants.SolveToken,
+        SolveToken.abi,
+        signer
+      );
+
+      try {
+        const allowance = Number(
+          await solveTokenContract.allowance(
+            signer.getAddress(),
+            constants.VotingContract
+          )
+        );
+        console.log(Number(allowance), Number(allowance) >= 1e18);
+        if (Number(allowance) >= 1e18) {
+          setApproval(true);
+        } else {
+          setApproval(false);
+        }
+      } catch (err) {
+        console.log(err);
       }
     }
   }
 
   async function voteForIdea(ideaId) {
-    setStatus("Loading...");
-
     if (typeof window.ethereum != undefined) {
       await requestAccount();
 
@@ -144,25 +242,20 @@ function GetIdeas() {
       );
 
       try {
-        let submitVoteTransaction = await votingContract.voteForIdea(ideaId);
-
-        let receipt = await submitVoteTransaction.wait();
-        console.log(receipt);
-
-        let ideaFromContract = await votingContract.ideas(ideaId);
+        const submitVoteTransaction = await votingContract.voteForIdea(ideaId);
+        await submitVoteTransaction.wait();
+        <Snackbar autoHideDuration={5000}>
+          <Alert severity="success">Transaction Completed Successfully</Alert>
+        </Snackbar>;
+        const ideaFromContract = await votingContract.ideas(ideaId);
         setIdeas(ideas.set(ideaId, ideaFromContract));
-
-        setStatus(`Idea Voted successfully`);
       } catch (err) {
         console.log(err);
-        setStatus("Failed to vote for idea");
       }
     }
   }
 
   async function claimFunds(ideaId) {
-    setStatus("Loading...");
-
     if (typeof window.ethereum != undefined) {
       await requestAccount();
 
@@ -175,18 +268,15 @@ function GetIdeas() {
       );
 
       try {
-        let submitClaimTransaction = await votingContract.claimFunds(ideaId);
-
-        let receipt = await submitClaimTransaction.wait();
-        console.log(receipt);
-
-        let ideaFromContract = await votingContract.ideas(ideaId);
+        const submitClaimTransaction = await votingContract.claimFunds(ideaId);
+        await submitClaimTransaction.wait();
+        <Snackbar autoHideDuration={5000}>
+          <Alert severity="success">Transaction Completed Successfully</Alert>
+        </Snackbar>;
+        const ideaFromContract = await votingContract.ideas(ideaId);
         setIdeas(ideas.set(ideaId, ideaFromContract));
-
-        setStatus(`Idea funds claimed successfully`);
       } catch (err) {
         console.log(err);
-        setStatus("Failed to claim funds for idea");
       }
     }
   }
