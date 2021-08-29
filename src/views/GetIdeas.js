@@ -9,9 +9,7 @@ import {
   Typography,
   IconButton,
   CircularProgress,
-  Snackbar,
 } from "@material-ui/core";
-import MuiAlert from "@material-ui/lab/Alert";
 import { useStyles } from "../styles";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
@@ -19,10 +17,8 @@ import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import CircularProgressWithLabel from "../styles/circularWithLabel";
 import VotingContract from "../abis/VotingContract.json";
 import SolveToken from "../abis/SolveToken.json";
-import Alert from "@material-ui/lab/Alert";
 import { toast } from "react-toastify";
 const constants = require("../abis/contract-address.json");
-
 function GetIdeas() {
   const classes = useStyles();
 
@@ -68,6 +64,7 @@ function GetIdeas() {
               ) : (
                 <IconButton
                   color="secondary"
+                  disabled={Boolean(!approval)}
                   aria-label="vote"
                   onClick={() => voteForIdea(index + 1)}
                 >
@@ -217,7 +214,6 @@ function GetIdeas() {
             constants.VotingContract
           )
         );
-        console.log(Number(allowance), Number(allowance) >= 1e18);
         if (Number(allowance) >= 1e18) {
           setApproval(true);
         } else {
@@ -244,9 +240,6 @@ function GetIdeas() {
       try {
         const submitVoteTransaction = await votingContract.voteForIdea(ideaId);
         await submitVoteTransaction.wait();
-        <Snackbar autoHideDuration={5000}>
-          <Alert severity="success">Transaction Completed Successfully</Alert>
-        </Snackbar>;
         const ideaFromContract = await votingContract.ideas(ideaId);
         setIdeas(ideas.set(ideaId, ideaFromContract));
       } catch (err) {
@@ -270,9 +263,6 @@ function GetIdeas() {
       try {
         const submitClaimTransaction = await votingContract.claimFunds(ideaId);
         await submitClaimTransaction.wait();
-        <Snackbar autoHideDuration={5000}>
-          <Alert severity="success">Transaction Completed Successfully</Alert>
-        </Snackbar>;
         const ideaFromContract = await votingContract.ideas(ideaId);
         setIdeas(ideas.set(ideaId, ideaFromContract));
       } catch (err) {
