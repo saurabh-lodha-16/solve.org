@@ -18,7 +18,9 @@ import CircularProgressWithLabel from "../styles/circularWithLabel";
 import VotingContract from "../abis/VotingContract.json";
 import SolveToken from "../abis/SolveToken.json";
 import { toast } from "react-toastify";
+
 const constants = require("../abis/contract-address.json");
+
 function GetIdeas() {
   const classes = useStyles();
 
@@ -32,10 +34,15 @@ function GetIdeas() {
     if (ideas.size > 0 && totalIdeas > 0) {
       return Array.from(Array(totalIdeas).keys()).map((index) => {
         let idea = ideas.get(index + 1);
+        
         return (
+          
           <Card key={idea} className={classes.root} variant="outlined">
+           
             <CardContent>
-              <Typography color="secondary" variant="h5" component="h2">
+             
+              <Typography color="secondary" variant="h5" component="h2" >
+               
                 {idea.title}
               </Typography>
               <Typography className={classes.pos}>
@@ -45,6 +52,7 @@ function GetIdeas() {
                 Solution
               </Typography>
               <Typography className={classes.pos}>{idea.solution}</Typography>
+             
             </CardContent>
             <div className={classes.infoBar}>
               {idea.isFunded ? (
@@ -98,7 +106,9 @@ function GetIdeas() {
                 <IconButton />
               )}
             </div>
+           
           </Card>
+         
         );
       });
     }
@@ -140,9 +150,10 @@ function GetIdeas() {
   return (
     <Container fixed>
       {!loading ? (
-        <Grid container>{showIdeaCards()}</Grid>
+        
+        <Grid container style={{marginTop:'10%'}}>{showIdeaCards()} </Grid>
       ) : (
-        <Grid container style={{position: 'relative'}}>
+        <Grid container style={{position: 'relative'}}  >
           <CircularProgress
             size={100}
             className={classes.loader}
