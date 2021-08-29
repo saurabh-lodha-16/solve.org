@@ -241,7 +241,9 @@ function GetIdeas() {
         const submitVoteTransaction = await votingContract.voteForIdea(ideaId);
         await submitVoteTransaction.wait();
         const ideaFromContract = await votingContract.ideas(ideaId);
-        setIdeas(ideas.set(ideaId, ideaFromContract));
+        ideas.set(ideaId, ideaFromContract);
+        await checkAllowance();
+        setIdeas(ideas);
       } catch (err) {
         console.log(err);
       }
