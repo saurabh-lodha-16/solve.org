@@ -45,7 +45,7 @@ function App() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed" color="inherit" >
+      <AppBar  color="inherit" >
         <Toolbar>
           <Typography variant="h4" className={classes.title} color="error">
             solve.org
@@ -53,8 +53,7 @@ function App() {
 
           <Button color="secondary" size="large" variant="outlined">
           <a href = {Pdf} target = "_blank" color="secondary" style={{ textDecoration: 'none', color:"red"}}>
-            White-Paper
-            </a>
+            White-Paper</a>
           </Button>
         </Toolbar>
         
