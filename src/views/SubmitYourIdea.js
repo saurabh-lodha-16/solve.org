@@ -93,7 +93,7 @@ function SubmitYourIdea() {
       <center>
       
       <Box  width="65%" margin="10%">
-       
+      <br/><br/><br/>
     
         <TextField
           className={classes.formElement}
@@ -139,7 +139,7 @@ function SubmitYourIdea() {
           Submit
         </Button>
        
-        <p>{status}</p>
+        <p className={classes.statusMessage}>{status}</p>
       
         </Box>
       </center>

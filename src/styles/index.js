@@ -2,12 +2,17 @@ import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles({
   formElement: {
-    width: "700px",
+    width: "70%",
     margin: "15px",
   },
   root: {
     flexGrow: 1,
     marginTop: 20,
+    
+  },
+  statusMessage:{
+    color: "rgb(190,52,41)",
+    font: " 16px Georgia, serif",
   },
   bullet: {
     display: "inline-block",

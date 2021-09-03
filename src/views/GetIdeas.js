@@ -149,6 +149,7 @@ function GetIdeas() {
 
   return (
     <Container fixed>
+      <br/><br/>
       {!loading ? (
         
         <Grid container style={{marginTop:'10%'}}>{showIdeaCards()} </Grid>
@@ -158,7 +159,7 @@ function GetIdeas() {
             size={100}
             className={classes.loader}
             color="secondary"
-            style={{marginLeft: '48%', marginTop:'25%'}}
+            style={{marginLeft: '48%', marginTop:'30%'}}
             
           />
         </Grid>

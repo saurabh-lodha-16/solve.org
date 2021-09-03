@@ -64,7 +64,8 @@ function GetVotingTokens() {
   return (
     <div>
       <center>
-        <Box margin="10%"> 
+        <Box marginTop="10%" width="65%"> 
+        <br/><br/><br/>
           <TextField
             className={classes.formElement}
             onChange={(e) => {
@@ -93,7 +94,7 @@ function GetVotingTokens() {
           >
             Get {solveTokens} SOLVE Tokens
           </Button>
-          <p>{status}</p>
+          <p className={classes.statusMessage}>{status}</p>
         </Box>
       </center>
     </div>

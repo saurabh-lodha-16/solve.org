@@ -45,7 +45,7 @@ function App() {
 
   return (
     <div className={classes.root}>
-      <AppBar  color="inherit" >
+      <AppBar  color="inherit" centered >
         <Toolbar>
           <Typography variant="h4" className={classes.title} color="error">
             solve.org
